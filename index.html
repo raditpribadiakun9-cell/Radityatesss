@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Radith Store</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: url("https://images.unsplash.com/photo-1527443224154-d1401a483b9e")
+        no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+    }
+
+    header {
+      text-align: center;
+      padding: 20px;
+      backdrop-filter: blur(5px);
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .product {
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 10px;
+      padding: 15px;
+      text-align: center;
+    }
+
+    .product button {
+      padding: 10px 15px;
+      border: none;
+      background: #ff8800;
+      color: #fff;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #cart-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #ff8800;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      border: none;
+      color: #fff;
+    }
+
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: #222;
+      padding: 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    button.close {
+      margin-top: 10px;
+      background: #555;
+      color: #fff;
+      padding: 8px 12px;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    button.pay {
+      background: #ff8800;
+      color: white;
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 5px;
+      border: none;
+    }
+
+    img.qris {
+      width: 100%;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Radith Store</h1>
+    <p>Panel Pterodactyl - Pilih dan Masukkan ke Keranjang</p>
+  </header>
+
+  <button id="cart-btn" onclick="openCart()">Keranjang (0)</button>
+
+  <div class="products">
+    <div class="product">
+      <h3>PANEL PTERODACTYL 1 GB</h3>
+      <p>Rp 1.000</p>
+      <button onclick="addToCart('PANEL PTERODACTYL 1 GB', 1000)">Tambah</button>
+    </div>
+    <div class="product">
+      <h3>PANEL PTERODACTYL 2 GB</h3>
+      <p>Rp 2.500</p>
+      <button onclick="addToCart('PANEL PTERODACTYL 2 GB', 2500)">Tambah</button>
+    </div>
+    <div class="product">
+      <h3>PANEL PTERODACTYL 4 GB</h3>
+      <p>Rp 3.500</p>
+      <button onclick="addToCart('PANEL PTERODACTYL 4 GB', 3500)">Tambah</button>
+    </div>
+    <div class="product">
+      <h3>PANEL PTERODACTYL 5 GB</h3>
+      <p>Rp 4.000</p>
+      <button onclick="addToCart('PANEL PTERODACTYL 5 GB', 4000)">Tambah</button>
+    </div>
+    <div class="product">
+      <h3>PANEL PTERODACTYL 7 GB</h3>
+      <p>Rp 5.000</p>
+      <button onclick="addToCart('PANEL PTERODACTYL 7 GB', 5000)">Tambah</button>
+    </div>
+    <div class="product">
+      <h3>PANEL PTERODACTYL 8 GB</h3>
+      <p>Rp 5.500</p>
+      <button onclick="addToCart('PANEL PTERODACTYL 8 GB', 5500)">Tambah</button>
+    </div>
+    <div class="product">
+      <h3>PANEL PTERODACTYL 10 GB</h3>
+      <p>Rp 6.999</p>
+      <button onclick="addToCart('PANEL PTERODACTYL 10 GB', 6999)">Tambah</button>
+    </div>
+    <div class="product">
+      <h3>PANEL PTERODACTYL RAM UNLIMITED</h3>
+      <p><s>Rp 10.000</s> Rp 7.000</p>
+      <button onclick="addToCart('PANEL PTERODACTYL RAM UNLIMITED', 7000)">Tambah</button>
+    </div>
+  </div>
+
+  <!-- Cart Modal -->
+  <div id="cart-modal" class="modal">
+    <div class="modal-content">
+      <h2>Keranjang</h2>
+      <div id="cart-items"></div>
+      <p id="cart-total"></p>
+      <button class="pay" onclick="openPayment()">Checkout</button>
+      <button class="close" onclick="closeCart()">Tutup</button>
+    </div>
+  </div>
+
+  <!-- Payment Modal -->
+  <div id="payment-modal" class="modal">
+    <div class="modal-content">
+      <h2>Pembayaran</h2>
+      <p>DANA: 089603266259 a.n JUN***O</p>
+      <button class="pay" onclick="openQR()">Lihat QRIS</button>
+      <button class="pay" onclick="openWA()">Saya Sudah Bayar</button>
+      <button class="close" onclick="closePayment()">Kembali</button>
+    </div>
+  </div>
+
+  <!-- QRIS Modal -->
+  <div id="qris-modal" class="modal">
+    <div class="modal-content">
+      <h2>QRIS Pembayaran</h2>
+      <img src="QRIS_RADITH_STORE.png" alt="QRIS" class="qris">
+      <button class="close" onclick="closeQR()">Tutup</button>
+    </div>
+  </div>
+
+  <!-- WhatsApp Modal -->
+  <div id="wa-modal" class="modal">
+    <div class="modal-content">
+      <h2>Konfirmasi WA</h2>
+      <input type="text" id="wa-number" placeholder="Masukkan nomor WhatsApp" />
+      <button class="pay" onclick="submitWA()">Kirim</button>
+      <button class="close" onclick="closeWA()">Tutup</button>
+    </div>
+  </div>
+
+  <script>
+    let cart = [];
+
+    function addToCart(name, price) {
+      cart.push({ name, price });
+      alert(name + " ditambahkan!");
+      document.getElementById("cart-btn").innerText = `Keranjang (${cart.length})`;
+    }
+
+    function openCart() {
+      const itemsDiv = document.getElementById("cart-items");
+      itemsDiv.innerHTML = "";
+      let total = 0;
+      cart.forEach((item, i) => {
+        itemsDiv.innerHTML += `<p>${i + 1}. ${item.name} - Rp ${item.price}</p>`;
+        total += item.price;
+      });
+      document.getElementById("cart-total").innerText = "Total: Rp " + total;
+      document.getElementById("cart-modal").style.display = "flex";
+    }
+
+    function closeCart() {
+      document.getElementById("cart-modal").style.display = "none";
+    }
+
+    function openPayment() {
+      document.getElementById("cart-modal").style.display = "none";
+      document.getElementById("payment-modal").style.display = "flex";
+    }
+
+    function closePayment() {
+      document.getElementById("payment-modal").style.display = "none";
+    }
+
+    function openQR() {
+      document.getElementById("payment-modal").style.display = "none";
+      document.getElementById("qris-modal").style.display = "flex";
+    }
+
+    function closeQR() {
+      document.getElementById("qris-modal").style.display = "none";
+      document.getElementById("payment-modal").style.display = "flex";
+    }
+
+    function openWA() {
+      document.getElementById("payment-modal").style.display = "none";
+      document.getElementById("wa-modal").style.display = "flex";
+    }
+
+    function closeWA() {
+      document.getElementById("wa-modal").style.display = "none";
+    }
+
+    function submitWA() {
+      const wa = document.getElementById("wa-number").value;
+      if (!wa) {
+        alert("Masukkan nomor WhatsApp!");
+        return;
+      }
+      alert("Nomor " + wa + " telah dikirim. Admin akan menghubungi.");
+      closeWA();
+      cart = [];
+      document.getElementById("cart-btn").innerText = "Keranjang (0)";
+    }
+  </script>
+</body>
+</html>
