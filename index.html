@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Radith Store</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: url('https://images.unsplash.com/photo-1523275335684-37898b6baf30') no-repeat center center fixed;
+      background-size: cover;
+      margin: 0;
+      padding: 0;
+      color: #fff;
+    }
+    .container {
+      background: rgba(0, 0, 0, 0.7);
+      padding: 20px;
+      max-width: 900px;
+      margin: auto;
+      border-radius: 10px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .product {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #555;
+    }
+    .product button {
+      padding: 8px 12px;
+      background: #28a745;
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .product button:hover {
+      background: #218838;
+    }
+    #cart {
+      margin-top: 20px;
+      padding: 15px;
+      background: #333;
+      border-radius: 8px;
+    }
+    #cart-items {
+      margin-bottom: 10px;
+    }
+    #checkout-btn {
+      background: #007bff;
+      color: white;
+      padding: 10px;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    #checkout-btn:hover {
+      background: #0069d9;
+    }
+    /* Popup styling */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: #fff;
+      color: #000;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+    }
+    .modal-content img {
+      width: 100%;
+      border-radius: 5px;
+    }
+    .close {
+      margin-top: 10px;
+      padding: 8px 12px;
+      background: #dc3545;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .close:hover {
+      background: #c82333;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 8px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    #submit-wa {
+      padding: 8px 12px;
+      background: #28a745;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #submit-wa:hover {
+      background: #218838;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Radith Store</h1>
+    <div id="products">
+
+      <div class="product">
+        <span>PANEL PTERODACTYL 1 GB - Rp 1.000</span>
+        <button onclick="addToCart('PANEL PTERODACTYL 1 GB', 1000)">Beli</button>
+      </div>
+
+      <div class="product">
+        <span>PANEL PTERODACTYL 2 GB - Rp 2.500</span>
+        <button onclick="addToCart('PANEL PTERODACTYL 2 GB', 2500)">Beli</button>
+      </div>
+
+      <div class="product">
+        <span>PANEL PTERODACTYL 4 GB - Rp 3.500</span>
+        <button onclick="addToCart('PANEL PTERODACTYL 4 GB', 3500)">Beli</button>
+      </div>
+
+      <div class="product">
+        <span>PANEL PTERODACTYL 5 GB - Rp 4.000</span>
+        <button onclick="addToCart('PANEL PTERODACTYL 5 GB', 4000)">Beli</button>
+      </div>
+
+      <div class="product">
+        <span>PANEL PTERODACTYL 7 GB - Rp 5.000</span>
+        <button onclick="addToCart('PANEL PTERODACTYL 7 GB', 5000)">Beli</button>
+      </div>
+
+      <div class="product">
+        <span>PANEL PTERODACTYL 8 GB - Rp 5.500</span>
+        <button onclick="addToCart('PANEL PTERODACTYL 8 GB', 5500)">Beli</button>
+      </div>
+
+      <div class="product">
+        <span>PANEL PTERODACTYL 10 GB - Rp 6.999</span>
+        <button onclick="addToCart('PANEL PTERODACTYL 10 GB', 6999)">Beli</button>
+      </div>
+
+      <div class="product">
+        <span>PANEL PTERODACTYL RAM UNLIMITED - Rp 7.000 (asli Rp 10.000)</span>
+        <button onclick="addToCart('PANEL PTERODACTYL RAM UNLIMITED', 7000)">Beli</button>
+      </div>
+
+    </div>
+
+    <div id="cart">
+      <h2>Keranjang</h2>
+      <div id="cart-items"></div>
+      <strong>Total: Rp <span id="total">0</span></strong><br><br>
+      <button id="checkout-btn" onclick="openModal()" disabled>Bayar</button>
+    </div>
+  </div>
+
+  <div id="paymentModal" class="modal">
+    <div class="modal-content">
+      <h2>Pembayaran</h2>
+      <p>Silakan bayar melalui:</p>
+      <ul style="text-align:left;">
+        <li>E-Wallet (DANA) 089603266259 a.n JUN***O</li>
+        <li>QRIS (scan gambar di bawah)</li>
+      </ul>
+      <img src="qris.jpg" alt="QRIS">
+      <p>Setelah membayar, masukkan nomor WhatsApp Anda:</p>
+      <input type="text" id="wa-number" placeholder="Contoh: 08xxxxxxxxxx">
+      <button id="submit-wa" onclick="submitOrder()">Kirim</button>
+      <button class="close" onclick="closeModal()">Tutup</button>
+    </div>
+  </div>
+
+  <script>
+    let cart = [];
+    let total = 0;
+
+    function addToCart(name, price) {
+      cart.push({ name, price });
+      total += price;
+      document.getElementById('total').innerText = total;
+      updateCartDisplay();
+      document.getElementById('checkout-btn').disabled = false;
+    }
+
+    function updateCartDisplay() {
+      const cartItemsDiv = document.getElementById('cart-items');
+      cartItemsDiv.innerHTML = '';
+      cart.forEach(item => {
+        const div = document.createElement('div');
+        div.textContent = item.name + ' - Rp ' + item.price;
+        cartItemsDiv.appendChild(div);
+      });
+    }
+
+    function openModal() {
+      if (total === 0) return;
+      document.getElementById('paymentModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('paymentModal').style.display = 'none';
+    }
+
+    function submitOrder() {
+      const waNumber = document.getElementById('wa-number').value;
+      if (!waNumber) {
+        alert('Harap masukkan nomor WhatsApp!');
+        return;
+      }
+      alert('Terima kasih! Pesanan Anda akan diproses melalui WhatsApp: ' + waNumber);
+      closeModal();
+    }
+  </script>
+</body>
+</html>
