@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Radith Store - Epic Cyberpunk</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+    font-family: 'Orbitron', sans-serif;
+    background: radial-gradient(circle at top, #0f0c29, #302b63, #24243e);
+    color: #fff;
+    overflow-x: hidden;
+}
+header {
+    text-align: center;
+    padding: 40px 0;
+    font-size: 3rem;
+    letter-spacing: 2px;
+    color: #0ff;
+    text-shadow: 0 0 5px #0ff, 0 0 10px #0ff, 0 0 20px #0ff;
+    animation: glitch 2s infinite;
+}
+@keyframes glitch {
+    0% { text-shadow: 2px 0 #0ff, -2px 0 #f0f; }
+    20% { text-shadow: -2px 2px #f0f, 2px -2px #0ff; }
+    40% { text-shadow: 2px -2px #0ff, -2px 2px #f0f; }
+    60% { text-shadow: -2px 0 #f0f, 2px 0 #0ff; }
+    80% { text-shadow: 2px 2px #0ff, -2px -2px #f0f; }
+    100% { text-shadow: 0 0 #0ff; }
+}
+
+.container { max-width: 1200px; margin: 20px auto; padding: 20px; }
+.products { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+
+.product {
+    background: rgba(0,0,0,0.5);
+    border: 1px solid #0ff;
+    border-radius: 15px;
+    overflow: hidden;
+    text-align: center;
+    transition: transform 0.4s, box-shadow 0.4s;
+    position: relative;
+}
+
+.product:hover {
+    transform: rotateY(10deg) scale(1.05);
+    box-shadow: 0 0 30px #0ff;
+}
+
+.product img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-bottom: 1px solid #0ff;
+}
+
+.product h3 { margin: 10px 0; font-size: 1.3rem; color: #0ff; }
+.product p { font-size: 1.1rem; margin-bottom: 10px; }
+.product .countdown { font-size: 0.9rem; color: #ff0; margin-bottom: 5px; }
+
+button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    background: #0ff;
+    color: #000;
+    cursor: pointer;
+    box-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+button:hover {
+    box-shadow: 0 0 20px #0ff, 0 0 40px #0ff;
+    transform: scale(1.1);
+}
+
+#cart-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #0ff;
+    color: #000;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: 0 0 15px #0ff, 0 0 30px #0ff;
+    z-index: 101;
+    transition: all 0.3s;
+}
+
+#cart-toggle:hover { transform: scale(1.2); }
+
+#cart {
+    position: fixed;
+    top: 50px;
+    right: -350px;
+    width: 300px;
+    background: rgba(0,0,0,0.9);
+    border: 1px solid #0ff;
+    padding: 20px;
+    border-radius: 10px;
+    transition: right 0.5s;
+    z-index: 100;
+}
+
+#cart.active { right: 20px; }
+
+#cart h2 { margin-bottom: 15px; color: #0ff; }
+#cart-items { list-style: none; margin-bottom: 10px; max-height: 200px; overflow-y: auto; }
+#cart-items li { margin-bottom: 5px; font-size: 0.95rem; }
+#cart button { width: 100%; margin-top: 10px; }
+
+.flying-item {
+    position: fixed;
+    width: 50px;
+    height: 50px;
+    pointer-events: none;
+    border-radius: 10px;
+    z-index: 999;
+    transition: transform 0.8s ease-in-out, opacity 0.8s ease-in-out;
+}
+</style>
+</head>
+<body>
+
+<header>Radith Store</header>
+
+<div class="container">
+    <div class="products" id="products">
+        <!-- Product template -->
+    </div>
+</div>
+
+<button id="cart-toggle">🛒</button>
+
+<div id="cart">
+    <h2>Keranjang Belanja</h2>
+    <ul id="cart-items"></ul>
+    <p>Total: R.P <span id="total">0</span></p>
+    <p>Untuk pembayaran:<br>E-Wallet (DANA) 089603266259 A.N JUN***O QRIS</p>
+    <p>Setelah transfer, hubungi WA Admin: 089603266259 untuk bukti & pengiriman produk.</p>
+</div>
+
+<script>
+const productsData = [
+    {name:'PANEL PTERODACTYL 1 GB', price:1000, img:'https://via.placeholder.com/250x150?text=1GB', countdown:120},
+    {name:'PANEL PTERODACTYL 2 GB', price:2500, img:'https://via.placeholder.com/250x150?text=2GB', countdown:180},
+    {name:'PANEL PTERODACTYL 4 GB', price:3500, img:'https://via.placeholder.com/250x150?text=4GB', countdown:200},
+    {name:'PANEL PTERODACTYL 5 GB', price:4000, img:'https://via.placeholder.com/250x150?text=5GB', countdown:240},
+    {name:'PANEL PTERODACTYL 7 GB', price:5000, img:'https://via.placeholder.com/250x150?text=7GB', countdown:300},
+    {name:'PANEL PTERODACTYL 8 GB', price:5500, img:'https://via.placeholder.com/250x150?text=8GB', countdown:360},
+    {name:'PANEL PTERODACTYL 10 GB', price:6999, img:'https://via.placeholder.com/250x150?text=10GB', countdown:420},
+    {name:'PANEL PTERODACTYL RAM UNLIMITED', price:7000, img:'https://via.placeholder.com/250x150?text=Unlimited', countdown:600},
+];
+
+const productsContainer = document.getElementById('products');
+
+productsData.forEach((product, index)=>{
+    const div = document.createElement('div');
+    div.className = 'product';
+    div.innerHTML = `
+        <img src="${product.img}" alt="${product.name}">
+        <h3>${product.name}</h3>
+        <p>R.P ${product.price}</p>
+        <p class="countdown" id="countdown-${index}"></p>
+        <button onclick="addToCart(event, ${index})">Beli</button>
+    `;
+    productsContainer.appendChild(div);
+
+    startCountdown(product.countdown, `countdown-${index}`);
+});
+
+let cartItemsArr = [];
+let totalPrice = 0;
+
+function startCountdown(seconds, elementId){
+    const el = document.getElementById(elementId);
+    let time = seconds;
+    setInterval(()=>{
+        let min = Math.floor(time/60);
+        let sec = time%60;
+        el.textContent = `Promo berakhir: ${min}m ${sec}s`;
+        time--;
+        if(time<0) time=0;
+    },1000);
+}
+
+const cartToggle = document.getElementById('cart-toggle');
+const cart = document.getElementById('cart');
+cartToggle.addEventListener('click', ()=>{ cart.classList.toggle('active'); });
+
+function addToCart(e, index){
+    const product = productsData[index];
+    cartItemsArr.push(product);
+    totalPrice += product.price;
+    updateCart();
+
+    // Create flying animation
+    const img = document.createElement('img');
+    img.src = product.img;
+    img.className = 'flying-item';
+    document.body.appendChild(img);
+    const rect = e.target.getBoundingClientRect();
+    img.style.left = rect.left + 'px';
+    img.style.top = rect.top + 'px';
+    setTimeout(()=>{ img.style.transform = `translate(${window.innerWidth - 320 - rect.left}px, ${20 - rect.top}px) scale(0.1)`; img.style.opacity = 0; },50);
+    setTimeout(()=>{ img.remove(); },850);
+
+    alert(`${product.name} berhasil ditambahkan ke keranjang!`);
+}
+
+function updateCart(){
+    const cartItems = document.getElementById('cart-items');
+    cartItems.innerHTML = '';
+    cartItemsArr.forEach(item=>{
+        const li = document.createElement('li');
+        li.textContent = `${item.name} - R.P ${item.price}`;
+        cartItems.appendChild(li);
+    });
+    document.getElementById('total').textContent = totalPrice;
+}
+</script>
+
+</body>
+</html>
