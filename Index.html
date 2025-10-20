@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Radith Store - MarketShop Galaxy</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+
+body {
+    font-family: 'Orbitron', sans-serif;
+    color: #fff;
+    overflow-x: hidden;
+    background-color: #000;
+    background-image: url('https://cdn.pixabay.com/photo/2016/11/14/03/16/galaxy-1822343_1280.jpg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+    background-size: cover;
+}
+
+/* HEADER */
+header {
+    text-align: center;
+    padding: 40px 0 20px;
+    font-size: 2.8rem;
+    color: #0ff;
+    letter-spacing: 2px;
+    text-shadow: 0 0 5px #0ff, 0 0 15px #0ff, 0 0 30px #0ff;
+    animation: glitch 2s infinite;
+}
+header span {
+    display: block;
+    font-size: 1.3rem;
+    color: #0fa;
+    text-shadow: 0 0 10px #0fa;
+}
+@keyframes glitch {
+    0% { text-shadow: 2px 0 #0ff, -2px 0 #f0f; }
+    50% { text-shadow: -2px 2px #f0f, 2px -2px #0ff; }
+    100% { text-shadow: 0 0 #0ff; }
+}
+
+/* FILTER */
+#filter-container { text-align:center; margin-bottom:20px; }
+#filter-container button {
+    margin:0 5px;
+    padding:8px 15px;
+    border-radius:5px;
+    cursor:pointer;
+    background:#0ff;
+    color:#000;
+    border:none;
+    font-weight:bold;
+    transition: all 0.3s;
+}
+#filter-container button:hover { background:#0fa; }
+
+/* CONTAINER PRODUK */
+.container { max-width: 1200px; margin: 20px auto; padding: 20px; }
+.products {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 20px;
+}
+
+/* PRODUK */
+.product {
+    background: rgba(0,0,0,0.6);
+    border: 1px solid #0ff;
+    border-radius: 15px;
+    overflow: hidden;
+    text-align: center;
+    transition: transform 0.4s, box-shadow 0.4s;
+    position: relative;
+}
+.product:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px #0ff;
+}
+.product .emoji { font-size: 70px; margin: 10px 0; }
+.product h3 { margin: 10px 0; font-size: 1.2rem; color: #0ff; }
+.product p { font-size: 1rem; margin-bottom: 10px; }
+
+/* BUTTON */
+button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    background: #0ff;
+    color: #000;
+    cursor: pointer;
+    box-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
+    transition: all 0.3s;
+}
+button:hover { background: #0fa; }
+
+/* KERANJANG */
+#cart-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #0ff, #0fa);
+    color: #000;
+    border: none;
+    border-radius: 50%;
+    width: 65px;
+    height: 65px;
+    font-size: 2rem;
+    cursor: pointer;
+    box-shadow: 0 0 20px #0ff, 0 0 40px #0ff;
+    z-index: 101;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: rotateGlow 4s linear infinite;
+}
+#cart-toggle:hover { transform: scale(1.2) rotate(10deg); }
+@keyframes rotateGlow {
+    0%,100% { box-shadow: 0 0 20px #0ff; }
+    50% { box-shadow: 0 0 50px #0ff, 0 0 100px #0ff; }
+}
+
+/* PANEL KERANJANG */
+#cart {
+    position: fixed;
+    top: 50px;
+    right: -350px;
+    width: 300px;
+    background: rgba(0,0,0,0.9);
+    border: 1px solid #0ff;
+    padding: 20px;
+    border-radius: 10px;
+    transition: right 0.5s;
+    z-index: 100;
+}
+#cart.active { right: 20px; }
+#cart h2 { margin-bottom: 15px; color: #0ff; }
+#cart-items { list-style: none; margin-bottom: 10px; max-height: 200px; overflow-y: auto; }
+#cart-items li { margin-bottom: 5px; font-size: 0.95rem; }
+
+#checkout-btn { margin-top: 10px; width: 100%; }
+
+#payment-popup {
+    display:none;
+    margin-top:10px;
+    background: rgba(0,255,255,0.1);
+    padding:10px;
+    border-radius:8px;
+    text-align:center;
+    border:1px solid #0ff;
+}
+#qris-container img {
+    width:200px;
+    border-radius:8px;
+    box-shadow:0 0 20px #0ff;
+}
+
+/* NOTIFIKASI TAMBAH PRODUK */
+#add-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.8);
+    color: #0ff;
+    padding: 20px 40px;
+    border-radius: 10px;
+    font-size: 1.5rem;
+    text-align: center;
+    box-shadow: 0 0 25px #0ff;
+    display: none;
+    z-index: 9999;
+    animation: fadeMessage 2s ease-in-out;
+}
+@keyframes fadeMessage {
+    0% { opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* CANVAS PARTIKEL */
+#neonCanvas {
+    position: fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    z-index:0;
+    pointer-events:none;
+}
+
+/* MOBILE FRIENDLY */
+@media(max-width:600px){
+    header { font-size:2rem; }
+    .product h3 { font-size:1rem; }
+    .product p { font-size:0.9rem; }
+    button { padding:8px 15px; font-size:0.9rem; }
+    #cart { width:90%; right:-100%; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="neonCanvas"></canvas>
+
+<header>
+    ⚡ RADITH STORE ⚡
+    <span>MarketShop Galaxy</span>
+</header>
+
+<div id="filter-container">
+    <button onclick="filterProducts('all')">Semua</button>
+    <button onclick="filterProducts('Panel')">Panel</button>
+    <button onclick="filterProducts('SC')">SC</button>
+</div>
+
+<div class="container">
+    <div class="products" id="products"></div>
+</div>
+
+<button id="cart-toggle">🛍️</button>
+
+<div id="cart">
+    <h2>Keranjang Belanja</h2>
+    <ul id="cart-items"></ul>
+    <p>Total: R.P <span id="total">0</span></p>
+    <button id="checkout-btn">Bayar</button>
+    
+    <div id="payment-popup">
+        <h3 style="color:#0ff;">Metode Pembayaran</h3>
+        <p>1. DANA: <strong>089603266259</strong></p>
+        <button onclick="showQRIS()" style="margin-bottom:10px;">Bayar QRIS</button>
+        <div id="qris-container" style="display:none; margin-top:10px;">
+            <img src="https://drive.google.com/uc?export=view&id=13ljnZqpJxlCJmHieRBD53XLwqnaFl81M" alt="QRIS">
+            <p>Scan QRIS untuk membayar</p>
+        </div>
+        <button onclick="confirmPayment()" style="margin-top:10px;">Selesai Transfer</button>
+        <button onclick="closePayment()" style="margin-top:10px; background:#f00; color:#fff;">Tutup</button>
+    </div>
+</div>
+
+<div id="add-message">🛍️ Item berhasil ditambahkan ke MarketShop!</div>
+
+<audio id="sound" src="https://freesound.org/data/previews/341/341695_6248187-lq.mp3"></audio
