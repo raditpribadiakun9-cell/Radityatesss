@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Radith Store - MarketShop Galaxy</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+
+body {
+  font-family: 'Orbitron', sans-serif;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  background: #000;
+}
+
+/* CANVAS GALAXY */
+#galaxyCanvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: -1;
+}
+
+/* HEADER */
+header {
+  text-align: center;
+  padding: 30px 0;
+  font-size: 2.5rem;
+  color: #0ff;
+  text-shadow: 0 0 10px #0ff, 0 0 30px #0ff;
+  animation: glowText 3s infinite alternate;
+}
+header span {
+  display: block;
+  font-size: 1.3rem;
+  color: #0fa;
+  text-shadow: 0 0 15px #0fa;
+}
+@keyframes glowText {
+  from { text-shadow: 0 0 5px #0ff, 0 0 15px #0ff; }
+  to { text-shadow: 0 0 20px #0ff, 0 0 40px #0ff; }
+}
+
+/* FILTER */
+#filter-container { text-align:center; margin-bottom:20px; }
+#filter-container button {
+  margin:0 5px; padding:8px 15px;
+  border-radius:5px; cursor:pointer;
+  background:#0ff; color:#000;
+  border:none; font-weight:bold;
+  transition: all 0.3s;
+}
+#filter-container button:hover { background:#0fa; }
+
+/* GRID PRODUK */
+.container { max-width:1200px; margin:0 auto; padding:0 20px; }
+.products {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap:20px;
+}
+@media (max-width:600px){
+  .products { grid-template-columns: repeat(2,1fr); }
+}
+
+/* PRODUK */
+.product {
+  background: rgba(0,0,0,0.6);
+  border:1px solid #0ff;
+  border-radius:15px;
+  text-align:center;
+  overflow:hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s;
+  animation: float 3s ease-in-out infinite;
+}
+.product:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 25px #0ff;
+}
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+.product .emoji { font-size:60px; margin:10px 0; display:block; }
+.product h3 { font-size:1.1rem; margin:5px 0; color:#0ff; }
+.product p { font-size:1rem; margin-bottom:10px; }
+
+/* BUTTON */
+button {
+  padding:8px 15px; font-size:1rem;
+  border:none; border-radius:5px;
+  background:#0ff; color:#000;
+  cursor:pointer; box-shadow:0 0 10px #0ff;
+  transition: all 0.3s;
+}
+button:hover { background:#0fa; }
+
+/* KERANJANG */
+#cart-toggle {
+  position:fixed; top:20px; right:20px;
+  width:70px; height:70px;
+  border-radius:50%;
+  background: radial-gradient(circle, #0ff 0%, #0fa 70%);
+  color:#000; font-size:2rem;
+  display:flex; justify-content:center; align-items:center;
+  cursor:pointer;
+  box-shadow:0 0 30px #0ff, 0 0 60px #0fa;
+  z-index:101;
+  animation: pulseGlow 3s infinite;
+}
+@keyframes pulseGlow {
+  0%,100% { box-shadow: 0 0 20px #0ff; }
+  50% { box-shadow: 0 0 60px #0ff, 0 0 100px #0fa; }
+}
+#cart-toggle:hover { transform: scale(1.1) rotate(5deg); }
+
+/* PANEL KERANJANG */
+#cart {
+  position:fixed; top:60px; right:-350px;
+  width:300px;
+  background:rgba(0,0,0,0.9);
+  border:1px solid #0ff;
+  padding:20px; border-radius:10px;
+  transition:right 0.5s;
+  z-index:100;
+}
+#cart.active { right:20px; }
+#cart h2 { color:#0ff; }
+#cart-items { list-style:none; max-height:200px; overflow-y:auto; margin-bottom:10px; }
+#cart-items li { margin-bottom:5px; font-size:0.95rem; }
+#checkout-btn { width:100%; margin-top:10px; }
+
+/* POPUP QRIS */
+#payment-popup {
+  display:none;
+  margin-top:10px;
+  background: rgba(0,255,255,0.1);
+  padding:10px;
+  border-radius:8px;
+  text-align:center;
+  border:1px solid #0ff;
+}
+#qris-container img {
+  width:200px;
+  border-radius:8px;
+  box-shadow:0 0 20px #0ff;
+}
+
+/* NOTIFIKASI */
+#add-message {
+  position:fixed;
+  top:50%; left:50%;
+  transform:translate(-50%,-50%);
+  background:rgba(0,0,0,0.8);
+  color:#0ff;
+  padding:20px 40px;
+  border-radius:10px;
+  font-size:1.3rem;
+  text-align:center;
+  box-shadow:0 0 25px #0ff;
+  display:none;
+  z-index:9999;
+}
+
+/* EMOJI TERBANG */
+.flying-item {
+  position:fixed;
+  font-size:40px;
+  pointer-events:none;
+  z-index:999;
+  transition: transform 1s ease-in-out, opacity 1s ease-in-out;
+}
+</style>
+</head>
+<body>
+
+<canvas id="galaxyCanvas"></canvas>
+
+<header>
+⚡ RADITH STORE ⚡
+<span>MarketShop Galaxy</span>
+</header>
+
+<div id="filter-container">
+  <button onclick="filterProducts('all')">Semua</button>
+  <button onclick="filterProducts('Panel')">Panel</button>
+  <button onclick="filterProducts('SC')">SC</button>
+  <button onclick="filterProducts('APK')">APK</button>
+</div>
+
+<div class="container">
+  <div class="products" id="products"></div>
+</div>
+
+<button id="cart-toggle">💠</button>
+
+<div id="cart">
+  <h2>Keranjang Belanja</h2>
+  <ul id="cart-items"></ul>
+  <p>Total: R.P <span id="total">0</span></p>
+  <button id="checkout-btn">Bayar</button>
+  <div id="payment-popup">
+    <h3 style="color:#0ff;">Metode Pembayaran</h3>
+    <p>1. DANA: <strong>0896032666259</strong></p>
+    <button onclick="showQRIS()">Bayar QRIS</button>
+    <div id="qris-container" style="display:none; margin-top:10px;">
+      <img src="https://i.ibb.co/v4tG4tgG/qris.jpg" alt="QRIS">
+      <p>Scan QRIS untuk membayar</p>
+    </div>
+    <button onclick="confirmPayment()">Selesai Transfer</button>
+    <button onclick="closePayment()" style="background:#f00; color:#fff;">Tutup</button>
+  </div>
+</div>
+
+<div id="add-message">🛒 Produk berhasil ditambahkan!</div>
+
+<audio id="sound" src="https://freesound.org/data/previews/341/341695_6248187-lq.mp3"></audio>
+
+<script>
+// ===== DATA PRODUK =====
+let productsData = [
+  {name:'PANEL PTERODACTYL 1 GB', price:1000, emoji:'💾', category:'Panel'},
+  {name:'PANEL PTERODACTYL 2 GB', price:2500, emoji:'💾', category:'Panel'},
+  {name:'PANEL PTERODACTYL 4 GB', price:3500, emoji:'💾', category:'Panel'},
+  {name:'PANEL PTERODACTYL 5 GB', price:4000, emoji:'💾', category:'Panel'},
+  {name:'PANEL PTERODACTYL 7 GB', price:5000, emoji:'💾', category:'Panel'},
+  {name:'PANEL PTERODACTYL 8 GB', price:5500, emoji:'💾', category:'Panel'},
+  {name:'PANEL PTERODACTYL 10 GB', price:6999, emoji:'💾', category:'Panel'},
+  {name:'PANEL RAM UNLIMITED ⚡', price:7000, emoji:'⚡', category:'Panel'},
+  {name:'SC BOT PUSHKONTAK', price:1000, emoji:'🤖', category:'SC'},
+  {name:'SC BOT ALL MENU', price:2500, emoji:'🤖', category:'SC'},
+  {name:'SC BOT CREATE PANEL', price:3250, emoji:'🤖', category:'SC'},
+  {name:'APK BIOSKOP PREMIUM', price:5000, emoji:'🎧', category:'APK'},
+  {name:'APK PIXELAB RED', price:2500, emoji:'💽', category:'APK'}
+];
+
+let cartItemsArr = [];
+let totalPrice = 0;
+
+// ===== RENDER PRODUK =====
+const productsContainer=document.getElementById('products');
+function renderProducts(data){
+  productsContainer.innerHTML='';
+  data.forEach((p,i)=>{
+    const div=document.createElement('div');
+    div.className='product';
+    div.innerHTML=`
+      <span class="emoji">${p.emoji}</span>
+      <h3>${p.name}</h3>
+      <p>R.P ${p.price}</p>
+      <button onclick="addToCart(event,${i})">Beli</button>
+    `;
+    productsContainer.appendChild(div);
+  });
+}
+renderProducts(productsData);
+
+function filterProducts(cat){
+  if(cat==='all') renderProducts(productsData);
+  else renderProducts(productsData.filter(p=>p.category===cat));
+}
+
+// ===== KERANJANG =====
+const cart=document.getElementById('cart');
+document.getElementById('cart-toggle').onclick=()=>cart.classList.toggle('active');
+document.getElementById('checkout-btn').onclick=()=>document.getElementById('payment-popup').style.display='block';
+
+function showQRIS(){ document.getElementById('qris-container').style.display='block'; }
+function closePayment(){ document.getElementById('payment-popup').style.display='none'; }
+
+function confirmPayment(){
+  if(cartItemsArr.length===0){ alert('Keranjang kosong!'); return; }
+  let produkNama = cartItemsArr.map(p=>p.name).join(', ');
+  let waNumber = "6289603266259";
+  let waMessage = encodeURIComponent(`Halo Admin! Saya sudah transfer untuk: ${produkNama}`);
+  window.open(`https://wa.me/${waNumber}?text=${waMessage}`,"_blank");
+  cartItemsArr=[]; totalPrice=0; updateCart();
+}
+
+function addToCart(e,index){
+  const product=productsData[index];
+  cartItemsArr.push(product);
+  totalPrice+=product.price;
+  updateCart();
+  document.getElementById('sound').play();
+
+  // efek emoji terbang ke keranjang
+  const emoji=document.createElement('span');
+  emoji.className='flying-item';
+  emoji.textContent=product.emoji;
+  document.body.appendChild(emoji);
+  const rect=e.target.getBoundingClientRect();
+  emoji.style.left=rect.left+'px';
+  emoji.style.top=rect.top+'px';
+  setTimeout(()=>{
+    emoji.style.transform=`translate(${window.innerWidth-100}px,-${rect.top}px) scale(0.1) rotate(720deg)`;
+    emoji.style.opacity=0;
+  },50);
+  setTimeout(()=>emoji.remove(),1000);
+
+  // notif
+  const msg=document.getElementById('add-message');
+  msg.style.display='block';
+  setTimeout(()=>msg.style.display='none',1800);
+}
+
+function updateCart(){
+  const list=document.getElementById('cart-items');
+  list.innerHTML='';
+  cartItemsArr.forEach(i=>{
+    const li=document.createElement('li');
+    li.textContent=`${i.name} - R.P ${i.price}`;
+    list.appendChild(li);
+  });
+  document.getElementById('total').textContent=totalPrice;
+}
+
+// ===== GALAXY CANVAS =====
+const canvas=document.getElementById('galaxyCanvas');
+const ctx=canvas.getContext('2d');
+canvas.width=innerWidth;
+canvas.height=innerHeight;
+let stars=[];
+for(let i=0;i<180;i++){
+  stars.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, r:Math.random()*1.5+0.5, dx:(Math.random()-0.5)*0.5, dy:(Math.random()-0.5)*0.5, color:['#0ff','#0fa','#f0f'][Math.floor(Math.random()*3)]});
+}
+function animateStars(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  stars.forEach(s=>{
+    ctx.beginPath();
+    ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fillStyle=s.color;
+    ctx.fill();
+    s.x+=s.dx; s.y+=s.dy;
+    if(s.x<0||s.x>canvas.width) s.dx*=-1;
+    if(s.y<0||s.y>canvas.height) s.dy*=-1;
+  });
+  requestAnimationFrame(animateStars);
+}
+animateStars();
+</script>
+</body>
+</html>
