@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Radith Store ✨</title>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    color: white;
+    overflow-x: hidden;
+    background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+  }
+
+  /* Animasi bintang latar */
+  .stars {
+    width: 2px;
+    height: 2px;
+    background: white;
+    position: absolute;
+    animation: twinkle 2s infinite ease-in-out;
+  }
+  @keyframes twinkle {
+    0%,100% {opacity: 0.3;}
+    50% {opacity: 1;}
+  }
+
+  /* Header */
+  header {
+    text-align: center;
+    padding: 20px;
+    background: rgba(0,0,0,0.5);
+    font-size: 2rem;
+    font-weight: bold;
+    color: #a988ff;
+    text-shadow: 0 0 10px #8f5fff, 0 0 20px #b36bff;
+  }
+
+  /* Filter */
+  .filter {
+    text-align: center;
+    margin: 10px;
+  }
+  .filter button {
+    margin: 5px;
+    padding: 8px 16px;
+    background: #2a1454;
+    border: none;
+    color: #fff;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  .filter button:hover {
+    background: #5d2eff;
+    box-shadow: 0 0 10px #8f5fff;
+  }
+
+  /* Produk grid */
+  .products {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    padding: 20px;
+    max-width: 1000px;
+    margin: auto;
+  }
+
+  .product {
+    background: rgba(255,255,255,0.05);
+    border-radius: 16px;
+    padding: 16px;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(180,100,255,0.2);
+    backdrop-filter: blur(6px);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: float 4s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%,100% { transform: translateY(0px); }
+    50% { transform: translateY(-6px); }
+  }
+
+  .product:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px #8f5fff, 0 0 30px #00c6ff;
+  }
+
+  .product h3 {
+    color: #c8a3ff;
+    text-shadow: 0 0 10px #8f5fff;
+  }
+
+  .product button {
+    background: linear-gradient(90deg,#5f2aff,#8f5fff);
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+  }
+
+  .product button:hover {
+    box-shadow: 0 0 15px #8f5fff;
+  }
+
+  /* Keranjang */
+  #cart-icon {
+    position: fixed;
+    top: 15px;
+    right: 20px;
+    font-size: 28px;
+    cursor: pointer;
+    z-index: 999;
+    color: #a988ff;
+    text-shadow: 0 0 15px #b36bff;
+  }
+
+  /* Notifikasi */
+  .notification {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(100,0,255,0.4);
+    padding: 12px 24px;
+    border-radius: 12px;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 0 15px #8f5fff;
+    opacity: 0;
+    transition: opacity 0.5s;
+    font-size: 1.1em;
+    text-align: center;
+  }
+  .notification.show {
+    opacity: 1;
+  }
+
+  /* Popup pembayaran */
+  #paymentPopup {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.8);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  .popup-content {
+    background: rgba(20,20,40,0.9);
+    padding: 20px;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 0 30px #8f5fff;
+  }
+  .popup-content img {
+    width: 180px;
+    border-radius: 12px;
+    margin-top: 10px;
+  }
+
+  @media (max-width: 600px) {
+    header { font-size: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+<header>🌌 Radith Store 🌌</header>
+<div id="cart-icon">🛒</div>
+
+<div class="filter">
+  <button onclick="filterProducts('all')">Semua</button>
+  <button onclick="filterProducts('panel')">Panel</button>
+  <button onclick="filterProducts('sc')">SC</button>
+  <button onclick="filterProducts('apk')">APK</button>
+</div>
+
+<div class="products" id="productList">
+  <!-- Produk PANEL -->
+  <div class="product" data-category="panel">
+    <h3>PANEL PTERODACTYL 1GB</h3>
+    <p>Rp 1.000</p>
+    <button onclick="addToCart('PANEL PTERODACTYL 1GB')">Beli</button>
+  </div>
+  <div class="product" data-category="panel">
+    <h3>PANEL PTERODACTYL 2GB</h3>
+    <p>Rp 2.500</p>
+    <button onclick="addToCart('PANEL PTERODACTYL 2GB')">Beli</button>
+  </div>
+  <div class="product" data-category="panel">
+    <h3>PANEL PTERODACTYL 5GB</h3>
+    <p>Rp 4.000</p>
+    <button onclick="addToCart('PANEL PTERODACTYL 5GB')">Beli</button>
+  </div>
+
+  <!-- Produk SC -->
+  <div class="product" data-category="sc">
+    <h3>SC (SECURITY) BOT PUSHKONTAK</h3>
+    <p>Rp 1.000</p>
+    <button onclick="addToCart('SC BOT PUSHKONTAK')">Beli</button>
+  </div>
+  <div class="product" data-category="sc">
+    <h3>SC (SECURITY) BOT CREATE PANEL</h3>
+    <p>Rp 3.250</p>
+    <button onclick="addToCart('SC BOT CREATE PANEL')">Beli</button>
+  </div>
+
+  <!-- Produk APK -->
+  <div class="product" data-category="apk">
+    <h3>APK BIOSKOP PREMIUM 🎧</h3>
+    <p>Rp 5.000</p>
+    <button onclick="addToCart('APK BIOSKOP PREMIUM')">Beli</button>
+  </div>
+  <div class="product" data-category="apk">
+    <h3>APK PIXELAB RED 💽</h3>
+    <p>Rp 2.500</p>
+    <button onclick="addToCart('APK PIXELAB RED')">Beli</button>
+  </div>
+</div>
+
+<div class="notification" id="notify">🛍️ Produk berhasil dimasukkan ke keranjang!</div>
+
+<!-- Popup -->
+<div id="paymentPopup">
+  <div class="popup-content">
+    <h3>💳 Metode Pembayaran</h3>
+    <p>1. DANA: 089603266259 (A.N Jun***o)</p>
+    <p>2. QRIS:</p>
+    <img src="https://i.ibb.co/v4tG4tgG/qris.jpg" alt="QRIS" />
+    <br><br>
+    <button onclick="closePayment()">Tutup</button>
+  </div>
+</div>
+
+<script>
+function addToCart(productName) {
+  let notify = document.getElementById("notify");
+  notify.textContent = "🌈 Produk " + productName + " berhasil dimasukkan ke keranjang! 🛒";
+  notify.classList.add("show");
+  setTimeout(() => notify.classList.remove("show"), 2500);
+
+  // animasi terbang ke keranjang
+  const cartIcon = document.getElementById("cart-icon");
+  const fly = document.createElement("div");
+  fly.textContent = "🛍️";
+  fly.style.position = "fixed";
+  fly.style.left = "50%";
+  fly.style.top = "50%";
+  fly.style.transition = "all 1s ease";
+  fly.style.zIndex = "1000";
+  document.body.appendChild(fly);
+  setTimeout(() => {
+    fly.style.left = cartIcon.getBoundingClientRect().left + "px";
+    fly.style.top = cartIcon.getBoundingClientRect().top + "px";
+    fly.style.opacity = 0;
+  }, 10);
+  setTimeout(() => fly.remove(), 1000);
+}
+
+document.getElementById("cart-icon").addEventListener("click", () => {
+  document.getElementById("paymentPopup").style.display = "flex";
+});
+
+function closePayment() {
+  document.getElementById("paymentPopup").style.display = "none";
+}
+
+function filterProducts(cat) {
+  const items = document.querySelectorAll(".product");
+  items.forEach(i => {
+    if (cat === "all" || i.dataset.category === cat) {
+      i.style.display = "block";
+    } else {
+      i.style.display = "none";
+    }
+  });
+}
+
+// bintang acak
+for(let i=0;i<80;i++){
+  const s=document.createElement("div");
+  s.className="stars";
+  s.style.top=Math.random()*100+"%";
+  s.style.left=Math.random()*100+"%";
+  s.style.animationDelay=Math.random()*2+"s";
+  document.body.appendChild(s);
+}
+</script>
+</body>
+</html>
