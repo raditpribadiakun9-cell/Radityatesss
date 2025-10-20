@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Radith Store - MarketShop (Cyberpunk)</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --main:#0ff;
+    --accent:#0fa;
+    --bg:#000;
+    --glass: rgba(0,0,0,0.65);
+    --card-min-width:260px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:var(--bg);font-family:'Orbitron',sans-serif;color:#fff;-webkit-font-smoothing:antialiased;}
+  body{
+    background-image:url('https://cdn.pixabay.com/photo/2016/11/14/03/16/galaxy-1822343_1280.jpg');
+    background-size:cover;background-attachment:fixed;background-position:center;
+    -webkit-touch-callout:none; -webkit-user-select:none; user-select:none;
+  }
+
+  /* HEADER (Techno Space) */
+  .header-wrap{padding:30px 20px 10px; text-align:center; position:relative; z-index:40;}
+  .brand {
+    display:inline-block;
+    transform:skewX(-12deg);
+    color:var(--main);
+    font-size:2.4rem;
+    letter-spacing:2px;
+    text-shadow:0 0 8px var(--main), 0 0 30px rgba(0,255,255,0.08);
+    font-weight:700;
+    position:relative;
+  }
+  .brand small{
+    display:block;
+    transform:skewX(12deg);
+    font-size:0.9rem;
+    color:#bff;
+    opacity:0.9;
+    margin-top:6px;
+    font-weight:500;
+  }
+  /* electric sparks */
+  .brand::after{
+    content:"";
+    position:absolute; right:-12px; top:-10px; width:34px; height:34px;
+    background:radial-gradient(circle at 50% 30%, rgba(255,255,255,0.9), rgba(0,255,255,0.15) 20%, transparent 40%);
+    filter:blur(6px); opacity:0.9; border-radius:50%;
+    animation: spark 2s infinite ease-in-out;
+  }
+  @keyframes spark{
+    0%{transform:translateY(0) scale(.8); opacity:.7}
+    50%{transform:translateY(-6px) scale(1.1); opacity:1}
+    100%{transform:translateY(0) scale(.8); opacity:.7}
+  }
+
+  /* FILTER */
+  #filter-container{display:flex;justify-content:center;gap:10px; padding:12px 16px; z-index:20;}
+  #filter-container button{
+    background:var(--main); color:#000; border:none; padding:10px 14px; border-radius:10px; font-weight:700;
+    box-shadow:0 0 12px rgba(0,255,255,0.12);
+    touch-action:manipulation;
+  }
+  #filter-container button:active{transform:scale(.98)}
+  /* layout */
+  .container{max-width:1100px;margin:18px auto;padding:12px;position:relative;z-index:10}
+  .products{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;}
+  @media(max-width:720px){ .products{grid-template-columns:repeat(2,1fr); gap:12px} .product{padding:14px} }
+
+  /* product card */
+  .product{
+    min-width:var(--card-min-width);
+    background:linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0.45));
+    border:1px solid rgba(0,255,255,0.12);
+    border-radius:14px;
+    padding:16px;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+    touch-action:manipulation;
+  }
+  .product .emoji{font-size:56px; display:block; margin-top:6px}
+  .product h3{margin:8px 0;color:var(--main); font-size:1.05rem}
+  .product p{margin:4px 0 12px; color:#dff; font-weight:600}
+  .product button{
+    padding:10px 14px;border-radius:10px;border:none;background:var(--main);color:#000;font-weight:800; cursor:pointer;
+    box-shadow:0 6px 18px rgba(0,255,255,0.06);
+    touch-action:manipulation;
+  }
+  .product:hover{transform:translateY(-4px); box-shadow:0 10px 30px rgba(0,255,255,0.06)}
+
+  /* subtle scanner glow line */
+  .product::before{
+    content:"";position:absolute;left:-50%;top:0;width:200%;height:3px;background:linear-gradient(90deg, transparent, rgba(0,255,255,0.12), transparent);
+    transform:translateX(-100%); animation: scan 4s linear infinite;
+  }
+  @keyframes scan{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+
+  /* cart toggle */
+  #cart-toggle{
+    position:fixed; right:18px; top:18px; z-index:120;
+    width:64px;height:64px;border-radius:50%; border:none; font-size:1.6rem;
+    background:linear-gradient(135deg,var(--main),var(--accent)); color:#000; box-shadow:0 0 28px rgba(0,255,255,0.14);
+    display:flex;align-items:center;justify-content:center; cursor:pointer;
+    touch-action:manipulation;
+  }
+
+  /* cart panel */
+  #cart{position:fixed; right:-360px; top:80px; width:320px; background:var(--glass); border-radius:12px; padding:16px; z-index:100; transition:right .35s; border:1px solid rgba(0,255,255,0.12)}
+  #cart.active{right:18px}
+  #cart h2{color:var(--main); margin:0 0 10px;font-size:1.05rem}
+  #cart-items{list-style:none;padding:0;margin:0; max-height:240px; overflow:auto}
+  #cart-items li{padding:6px 4px;border-bottom:1px dashed rgba(0,255,255,0.03); font-size:.95rem}
+  #cart .total{margin-top:10px;font-weight:800}
+  #checkout-btn{width:100%; margin-top:12px; padding:12px 10px; border-radius:10px; border:none; background:var(--main); color:#000; font-weight:900; font-size:1rem; touch-action:manipulation}
+
+  /* payment area inside cart */
+  #payment-area{margin-top:10px; display:none; background:rgba(255,255,255,0.02); padding:10px; border-radius:8px; border:1px solid rgba(0,255,255,0.03)}
+  #payment-area p{margin:6px 0;color:#dff}
+  #payment-area button{margin-top:6px; width:100%;}
+
+  /* QRIS portal warp (full-screen overlay) */
+  #qris-portal{
+    display:none; position:fixed; inset:0; z-index:300; backdrop-filter: blur(3px);
+    background: radial-gradient(circle at 50% 30%, rgba(0,255,255,0.04), rgba(0,0,0,0.95));
+    align-items:center; justify-content:center; flex-direction:column;
+  }
+  .portal-card{background:linear-gradient(180deg, rgba(0,0,0,0.85), rgba(0,0,0,0.75)); padding:20px; border-radius:14px; border:1px solid rgba(0,255,255,0.08); text-align:center; box-shadow:0 0 60px rgba(0,255,255,0.06)}
+  .portal-card img{width:260px; max-width:86vw; border-radius:10px; box-shadow:0 0 30px rgba(0,255,255,0.12)}
+  .warp{position:absolute; inset:0; background:conic-gradient(rgba(0,255,255,0.02), transparent); animation:warpPulse 1s ease; opacity:.5}
+  @keyframes warpPulse{0%{transform:scale(.95);opacity:.4}50%{transform:scale(1.03);opacity:.9}100%{transform:scale(1);opacity:.5}}
+
+  /* marquee (promo) */
+  #marquee{position:fixed; bottom:0; left:0; right:0; background:rgba(0,0,0,0.6); border-top:1px solid rgba(0,255,255,0.06); z-index:80; padding:8px 0; overflow:hidden}
+  #marquee .inner{display:inline-block; white-space:nowrap; color:var(--main); padding-left:100%; animation:marq 22s linear infinite}
+  @keyframes marq{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
+
+  /* floating notification (with black translucent background & kilat) */
+  #notif {
+    position:fixed; left:50%; top:40%; transform:translate(-50%,-50%); z-index:400;
+    background:rgba(0,0,0,0.85); color:var(--main); padding:18px 28px; border-radius:12px; border:1px solid rgba(0,255,255,0.12);
+    box-shadow:0 0 40px rgba(0,255,255,0.12); font-weight:800; font-size:1.05rem; display:flex; align-items:center; gap:12px; opacity:0;
+    pointer-events:none;
+  }
+  /* kilat effect */
+  .bolt{
+    width:36px;height:36px;border-radius:8px; background:linear-gradient(180deg,var(--main),var(--accent)); display:flex;align-items:center;justify-content:center; color:#000;
+    box-shadow:0 0 18px rgba(0,255,255,0.15), 0 0 40px rgba(0,255,255,0.06);
+    transform:rotate(10deg);
+    animation:boltFlash .6s ease;
+  }
+  @keyframes boltFlash{0%{transform:scale(.6) rotate(10deg);opacity:0}30%{transform:scale(1.15) rotate(10deg);opacity:1}70%{transform:scale(1) rotate(10deg)}100%{opacity:1}}
+
+  /* show/hide notif animation */
+  .notif-show{animation:notifIn .9s forwards}
+  @keyframes notifIn{0%{opacity:0; transform:translate(-50%,-56%) scale(.9)}30%{opacity:1; transform:translate(-50%,-50%) scale(1.08)}100%{opacity:1; transform:translate(-50%,-50%) scale(1)}}
+  .notif-hide{animation:notifOut .7s forwards}
+  @keyframes notifOut{0%{opacity:1; transform:translate(-50%,-50%) scale(1)}100%{opacity:0; transform:translate(-50%,-44%) scale(.9)}
+
+  /* small helpers */
+  .center{display:flex;align-items:center;justify-content:center}
+  /* ensure large tappable areas for mobile */
+  button, #cart-toggle, .product button { min-height:44px; min-width:44px; }
+</style>
+</head>
+<body>
+
+  <div class="header-wrap">
+    <div class="brand">RADITH STORE<small>MarketShop</small></div>
+  </div>
+
+  <div id="filter-container">
+    <button onclick="filterProducts('all')">Semua</button>
+    <button onclick="filterProducts('Panel')">Panel</button>
+    <button onclick="filterProducts('SC')">SC</button>
+  </div>
+
+  <main class="container">
+    <div class="products" id="products"></div>
+  </main>
+
+  <button id="cart-toggle" title="Keranjang">🛍️</button>
+
+  <aside id="cart" aria-live="polite">
+    <h2>Keranjang Belanja</h2>
+    <ul id="cart-items"></ul>
+    <div class="total">Total: R.P <span id="total">0</span></div>
+    <button id="checkout-btn">Bayar</button>
+
+    <div id="payment-area">
+      <p style="color:#bff; margin:0 0 6px">Metode Pembayaran:</p>
+      <p>DANA: <strong style="color:var(--main)">089603266259</strong></p>
+      <button id="show-qris" style="background:var(--main);color:#000;border:none;padding:10px;border-radius:8px;margin-top:8px">Tampilkan QRIS</button>
+      <button id="finish-transfer" style="background:#222;color:var(--main);border:1px solid rgba(0,255,255,0.06);padding:10px;border-radius:8px;margin-top:8px">Selesai Transfer (Chat Admin)</button>
+    </div>
+  </aside>
+
+  <!-- QRIS PORTAL (warp + image) -->
+  <div id="qris-portal" class="center">
+    <div class="warp"></div>
+    <div class="portal-card">
+      <h3 style="color:var(--main); margin:0 0 12px">Scan QRIS untuk membayar</h3>
+      <img id="qris-img" src="https://i.ibb.co/KRwXTLs/Screenshot-2025-10-19-110205.jpg" alt="QRIS Radith Store">
+      <div style="margin-top:12px">
+        <button onclick="closeQRIS()" style="background:var(--main);color:#000;border:none;padding:10px 14px;border-radius:8px">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- marquee promo -->
+  <div id="marquee"><div class="inner">🔥 RADITH STORE CYBER SALE ⚡ SC BOT MULAI 1K 💾 PANEL MURAH 💫 FAST RESPON ADMIN VIA WHATSAPP 🛠️</div></div>
+
+  <!-- notifikasi tengah -->
+  <div id="notif" role="status" aria-hidden="true">
+    <div class="bolt">⚡</div>
+    <div id="notif-text" style="margin-left:8px">Produk berhasil dimasukkan ke keranjang!</div>
+  </div>
+
+  <!-- sounds -->
+  <audio id="sAdd" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_0b40f34b1c.mp3?filename=interface-124464.mp3" preload="auto"></audio>
+  <audio id="sCheckout" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_777736.mp3?filename=confirm-124460.mp3" preload="auto"></audio>
+  <audio id="sWarp" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_39d7b6b7f2.mp3?filename=whoosh-124471.mp3" preload="auto"></audio>
+
+<script>
+/* ---------- DATA ---------- */
+const productsData = [
+  {name:'PANEL PTERODACTYL 1 GB', price:1000, emoji:'💾', category:'Panel'},
+  {name:'PANEL PTERODACTYL 2 GB', price:2500, emoji:'💾', category:'Panel'},
+  {name:'PANEL PTERODACTYL 4 GB', price:3500, emoji:'💾', category:'Panel'},
+  {name:'PANEL PTERODACTYL 5 GB', price:4000, emoji:'💾', category:'Panel'},
+  {name:'PANEL PTERODACTYL 8 GB', price:5500, emoji:'💾', category:'Panel'},
+  {name:'PANEL RAM UNLIMITED', price:7000, emoji:'⚡', category:'Panel'},
+  {name:'SC BOT PUSHKONTAK', price:1000, emoji:'🤖', category:'SC'},
+  {name:'SC BOT ALL MENU', price:2500, emoji:'🤖', category:'SC'},
+  {name:'SC CREATE PANEL', price:3250, emoji:'🤖', category:'SC'}
+];
+
+let cartItems = [];
+let totalPrice = 0;
+
+/* ---------- ELEMENTS ---------- */
+const productsEl = document.getElementById('products');
+const cartEl = document.getElementById('cart');
+const cartToggle = document.getElementById('cart-toggle');
+const cartItemsEl = document.getElementById('cart-items');
+const totalEl = document.getElementById('total');
+const checkoutBtn = document.getElementById('checkout-btn');
+const paymentArea = document.getElementById('payment-area');
+const showQrisBtn = document.getElementById('show-qris');
+const finishTransferBtn = document.getElementById('finish-transfer');
+const qrisPortal = document.getElementById('qris-portal');
+const notif = document.getElementById('notif');
+const notifText = document.getElementById('notif-text');
+const sAdd = document.getElementById('sAdd');
+const sCheckout = document.getElementById('sCheckout');
+const sWarp = document.getElementById('sWarp');
+
+/* ---------- RENDER PRODUCTS ---------- */
+function renderProducts(list){
+  productsEl.innerHTML = '';
+  list.forEach((p, i)=>{
+    const card = document.createElement('div');
+    card.className = 'product';
+    card.innerHTML = `
+      <span class="emoji">${p.emoji}</span>
+      <h3>${p.name}</h3>
+      <p>R.P ${p.price}</p>
+      <button aria-label="Beli ${p.name}" onclick="addToCart(event, ${i})">Beli</button>
+    `;
+    productsEl.appendChild(card);
+  });
+}
+renderProducts(productsData);
+
+/* ---------- FILTER ---------- */
+function filterProducts(cat){
+  if(cat === 'all') renderProducts(productsData);
+  else renderProducts(productsData.filter(p=>p.category===cat));
+}
+
+/* ---------- CART TOGGLE ---------- */
+cartToggle.addEventListener('click', ()=>{ cartEl.classList.toggle('active'); });
+
+/* ---------- ADD TO CART (with flying emoji + notif + sound) ---------- */
+function addToCart(e, index){
+  // index refers to productsData index
+  const product = productsData[index];
+  cartItems.push(product);
+  totalPrice += product.price;
+  updateCart();
+
+  // play add sound
+  try{ sAdd.currentTime = 0; sAdd.play(); }catch(e){}
+
+  // floating notification with kilat (bolt)
+  showNotification(`✅ ${product.name} berhasil dimasukkan ke keranjang!`);
+
+  // flying emoji animation
+  const emoji = document.createElement('div');
+  emoji.textContent = product.emoji;
+  emoji.style.position = 'fixed';
+  emoji.style.fontSize = '44px';
+  emoji.style.zIndex = 500;
+  emoji.style.left = (e.target.getBoundingClientRect().left + 6) + 'px';
+  emoji.style.top = (e.target.getBoundingClientRect().top - 10) + 'px';
+  emoji.style.transition = 'transform .9s cubic-bezier(.22,.9,.18,1), opacity .9s';
+  document.body.appendChild(emoji);
+
+  // target = cartToggle center
+  const cartRect = cartToggle.getBoundingClientRect();
+  const targetX = cartRect.left + cartRect.width/2 - 18;
+  const targetY = cartRect.top + cartRect.height/2 - 18;
+  // force reflow then animate
+  requestAnimationFrame(()=> {
+    emoji.style.transform = `translate(${targetX - parseFloat(emoji.style.left)}px, ${targetY - parseFloat(emoji.style.top)}px) scale(.2) rotate(720deg)`;
+    emoji.style.opacity = '0';
+  });
+  setTimeout(()=> emoji.remove(), 950);
+}
+
+/* ---------- UPDATE CART ---------- */
+function updateCart(){
+  cartItemsEl.innerHTML = '';
+  cartItems.forEach((it, idx)=>{
+    const li = document.createElement('li');
+    li.textContent = `${it.name} - R.P ${it.price}`;
+    cartItemsEl.appendChild(li);
+  });
+  totalEl.textContent = totalPrice;
+  // show payment area if cart has items
+  paymentArea.style.display = cartItems.length>0 ? 'block' : 'none';
+}
+
+/* ---------- NOTIFICATION (kilat) ---------- */
+let notifTimeout;
+function showNotification(message){
+  if(notifTimeout) { clearTimeout(notifTimeout); notif.classList.remove('notif-hide'); }
+  notifText.textContent = message;
+  notif.classList.remove('notif-hide'); notif.classList.add('notif-show');
+  notif.style.opacity = '1';
+  // hide after 1.4s with small delay
+  notifTimeout = setTimeout(()=>{
+    notif.classList.remove('notif-show'); notif.classList.add('notif-hide');
+  }, 1400);
+}
+
+/* ---------- CHECKOUT / QRIS ---------- */
+checkoutBtn.addEventListener('click', ()=>{
+  if(cartItems.length === 0){
+    alert('Keranjang kosong!');
+    return;
+  }
+  // play checkout sound then open qris portal
+  try{ sCheckout.currentTime = 0; sCheckout.play(); }catch(e){}
+  // show portal with warp sound
+  setTimeout(()=> {
+    try{ sWarp.currentTime=0; sWarp.play(); }catch(e){}
+    qrisPortal.style.display = 'flex';
+  }, 180);
+});
+
+function closeQRIS(){
+  qrisPortal.style.display = 'none';
+}
+
+/* show QRIS from button in cart */
+showQrisBtn.addEventListener('click', ()=>{
+  try{ sWarp.currentTime=0; sWarp.play(); }catch(e){}
+  qrisPortal.style.display = 'flex';
+});
+
+/* finish transfer -> open whatsapp chat */
+finishTransferBtn.addEventListener('click', ()=>{
+  const phone = '6289603266259';
+  const produkNama = cartItems.map(p=>p.name).join(', ');
+  const msg = encodeURIComponent(`Halo admin, saya sudah transfer untuk pesanan: ${produkNama}`);
+  window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+});
+
+/* close portal when clicked outside card */
+qrisPortal.addEventListener('click', (ev)=>{
+  if(ev.target === qrisPortal) closeQRIS();
+});
+
+/* ---------- ensure touch-friendly: avoid accidental overlapping layers ---------- */
+/* Make sure cart is not covering the checkout button area by z-index ordering done in CSS */
+
+/* ---------- RESIZE HANDLING ---------- */
+window.addEventListener('resize', ()=>{ /* nothing heavy, placeholder */ });
+
+/* ---------- initial UI state ---------- */
+updateCart();
+
+</script>
+</body>
+</html>
